@@ -12,7 +12,10 @@ internal sealed class BridgeServer
     private readonly ConcurrentDictionary<string, WebSocket> _socketClients = new();
     private readonly ConcurrentDictionary<string, TaskCompletionSource<BridgeResponse>> _pending = new();
     private readonly ConcurrentDictionary<string, long> _pendingStartedAtMs = new();
+    private readonly ConcurrentDictionary<string, WebSocket> _tunnelClients = new();
     private readonly SemaphoreSlim _wsSendLock = new(1, 1);
+
+    
 
     private readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web)
     {
@@ -82,8 +85,30 @@ internal sealed class BridgeServer
         return (Convert.ToBase64String(bytes), true);
     }
 
-    private WebSocket? PickSocketClient()
+    private WebSocket? PickSocketClient(HttpListenerRequest request)
     {
+        var tunnelId = request.Headers["X-Tunnel-Id"];
+
+        if (string.IsNullOrWhiteSpace(tunnelId))
+        {
+            // Fallback: mytunnel.localhost or mytunnel.proxiee.com -> "mytunnel"
+            var host = request.Url?.Host ?? string.Empty;
+            var parts = host.Split('.');
+            if (parts.Length > 0)
+            {
+                tunnelId = parts[0];
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(tunnelId))
+        {
+            if (_tunnelClients.TryGetValue(tunnelId, out var ws) && ws.State == WebSocketState.Open)
+            {
+                return ws;
+            }
+        }
+
+        // Fallback or old behavior: pick first available
         foreach (var kvp in _socketClients)
         {
             if (kvp.Value.State == WebSocketState.Open)
@@ -122,6 +147,7 @@ internal sealed class BridgeServer
 
             var clientId = Guid.NewGuid().ToString("N");
             _socketClients[clientId] = ws;
+
             Console.WriteLine($"ws client connected id={clientId} remote={context.Request.RemoteEndPoint}");
             Logger.Info($"ws connected id={clientId} remote={context.Request.RemoteEndPoint}");
 
@@ -175,6 +201,14 @@ internal sealed class BridgeServer
                         continue;
                     }
 
+                    if (env?.Type == "register" && !string.IsNullOrWhiteSpace(env.TunnelId))
+                    {
+                        _tunnelClients[env.TunnelId] = ws;
+                        Console.WriteLine($"ws registered id={clientId} tunnelId={env.TunnelId}");
+                        Logger.Info($"ws registered id={clientId} tunnelId={env.TunnelId}");
+                        continue;
+                    }
+
                     if (env?.Type != "response" || string.IsNullOrWhiteSpace(env.Id) || env.Response is null)
                         continue;
 
@@ -202,6 +236,13 @@ internal sealed class BridgeServer
             finally
             {
                 _socketClients.TryRemove(clientId, out _);
+                
+                var tunnelPairs = _tunnelClients.Where(kvp => kvp.Value == ws).ToList();
+                foreach (var pair in tunnelPairs)
+                {
+                    _tunnelClients.TryRemove(pair.Key, out _);
+                }
+
                 try
                 {
                     if (ws.State == WebSocketState.Open || ws.State == WebSocketState.CloseReceived)
@@ -234,7 +275,7 @@ internal sealed class BridgeServer
         {
             var response = context.Response;
 
-            var ws = PickSocketClient();
+            var ws = PickSocketClient(context.Request);
             if (ws is null)
             {
                 response.StatusCode = 503;

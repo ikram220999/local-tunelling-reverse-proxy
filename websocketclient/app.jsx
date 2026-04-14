@@ -56,8 +56,9 @@ const App = ({ port }) => {
           onError: (msg) => {
             // We only log the error but don't crash, the bridge auto-reconnects
             addLog(`[ERROR] ${msg}`);
-          }
-        });
+          },
+
+        }, data.subdomain);
 
         bridge.runForever();
       } catch (err) {

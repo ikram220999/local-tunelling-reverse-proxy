@@ -54,6 +54,7 @@ public sealed class NginxTunnelConfigWriter(
         sb.AppendLine("        proxy_set_header X-Real-IP $remote_addr;");
         sb.AppendLine("        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;");
         sb.AppendLine("        proxy_set_header X-Forwarded-Proto $scheme;");
+        sb.AppendLine($"       proxy_set_header X-Tunnel-Id {subdomain};");
         sb.AppendLine("        proxy_read_timeout 3600s;");
         sb.AppendLine("        proxy_send_timeout 3600s;");
         sb.AppendLine("    }");

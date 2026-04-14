@@ -47,11 +47,12 @@ function responseHeadersToObject(headers) {
 }
 
 class BridgeClient {
-  constructor(bridgeWsUrl, targetHttpBase, callbacks) {
+  constructor(bridgeWsUrl, targetHttpBase, callbacks, tunnelId) {
     this.bridgeWsUrl = bridgeWsUrl;
     this.targetHttpBase = targetHttpBase;
     this.reconnectMs = 1000;
     this.callbacks = callbacks || {};
+    this.tunnelId = tunnelId;
     this.ws = null;
     this.shouldRun = true;
   }
@@ -169,6 +170,12 @@ class BridgeClient {
         if (this.callbacks.onError) this.callbacks.onError(`Connection failed. Retrying in ${this.reconnectMs}ms...`);
         await sleep(this.reconnectMs);
         continue;
+      }
+
+      console.log("tunnelId", this.tunnelId)
+      // Send the tunnelId to register the connection with the server
+      if (this.tunnelId) {
+        ws.send(JSON.stringify({ type: "register", tunnelId: this.tunnelId }));
       }
 
       if (this.callbacks.onConnect) this.callbacks.onConnect();

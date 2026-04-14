@@ -8,6 +8,7 @@ internal sealed class BridgeEnvelope
 {
     public string? Type { get; set; }
     public string? Id { get; set; }
+    public string? TunnelId { get; set; }
     public BridgeRequest? Request { get; set; }
     public BridgeResponse? Response { get; set; }
 }
