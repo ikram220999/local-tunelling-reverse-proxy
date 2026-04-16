@@ -42,7 +42,7 @@ const App = ({ port }) => {
         const bridgeUrl = data.webSocketServerUrl || data.WebSocketServerUrl; // Handle different casing
         if (!bridgeUrl) throw new Error("No WebSocket URL received from API");
         console.log(bridgeUrl);
-        bridge = new BridgeClient("ws://localhost:4001", `http://localhost:${port}`, {
+        bridge = new BridgeClient("wss://ws-server.uplinkr.xyz", `http://localhost:${port}`, {
           onConnect: () => setStatus('online'),
           onClose: () => {
             if (status !== 'error') setStatus('connecting');

@@ -119,6 +119,12 @@ internal sealed class BridgeServer
 
     private static void TrySetResponseHeader(HttpListenerResponse response, string name, string value)
     {
+        if (name.Equals("Content-Encoding", StringComparison.OrdinalIgnoreCase))
+            return;
+        
+        if (name.Equals("Transfer-Encoding", StringComparison.OrdinalIgnoreCase))
+            return;
+
         if (name.Equals("Content-Type", StringComparison.OrdinalIgnoreCase))
         {
             response.ContentType = value;
