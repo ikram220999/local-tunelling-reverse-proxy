@@ -1,0 +1,31 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name example.com;
+
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name example.com;
+
+    ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    error_page 400 401 403 404 500 502 503 504 =200 /error.html;
+
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_intercept_errors on;
+    }
+
+    location = /error.html {
+        internal;
+        root /var/www/html/uplinkr-fallback;
+    }
+}
