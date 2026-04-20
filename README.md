@@ -31,6 +31,7 @@ Browser → Nginx (TLS, wildcard) → Bridge Server → WebSocket → uplinkr CL
 | `nginx-reverseproxy/` | Nginx | Reverse proxy — TLS termination, wildcard subdomain routing |
 | `website/` | HTML/CSS/JS | Marketing landing page |
 | `fallback-page/` | HTML | Custom nginx error pages (404, 503, etc.) |
+| `core-api/` | C# / .NET 10 | ⚠️ Work in progress — not part of the current system, ignore for now |
 
 ---
 
@@ -124,5 +125,6 @@ The `nginx-reverseproxy/` directory contains:
 │   └── bridge.js           # WebSocket bridge client
 ├── nginx-reverseproxy/     # Nginx config + Docker Compose
 │   └── fallback-page/      # Error pages
-└── website/                # Landing page
+├── website/                # Landing page
+└── core-api/               # ⚠️ Ignore — work in progress, not part of the current system
 ```
