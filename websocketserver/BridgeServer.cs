@@ -212,6 +212,7 @@ internal sealed class BridgeServer
                         _tunnelClients[env.TunnelId] = ws;
                         Console.WriteLine($"ws registered id={clientId} tunnelId={env.TunnelId}");
                         Logger.Info($"ws registered id={clientId} tunnelId={env.TunnelId}");
+                        Logger.TunnelRegistered(env.TunnelId, clientId, context.Request.RemoteEndPoint?.ToString() ?? "unknown");
                         continue;
                     }
 
