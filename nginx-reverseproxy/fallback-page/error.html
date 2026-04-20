@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Something went wrong</title>
+
+<style>
+:root {
+    --bg: #0b0c10;
+    --panel: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.08);
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --accent: #3b82f6;
+    --danger: #ef4444;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+.card {
+    width: min(720px, 92%);
+    padding: 32px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--panel);
+    backdrop-filter: blur(12px);
+}
+
+.kicker {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    letter-spacing: 0.3px;
+}
+
+.error-code {
+    font-size: 42px;
+    font-weight: 600;
+    color: var(--danger);
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 26px;
+}
+
+.flow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 24px 0;
+}
+
+.node {
+    flex: 1;
+    text-align: center;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+    background: var(--muted);
+}
+
+.node.active .dot { background: var(--accent); }
+.node.failed .dot { background: var(--danger); }
+
+.label {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.value {
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.line {
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+
+.status {
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--danger);
+    display: flex;
+    justify-content: space-between;
+}
+
+.footer {
+    margin-top: 18px;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+}
+</style>
+</head>
+
+<body>
+<div class="card">
+
+<div class="kicker">Something went wrong</div>
+
+<div class="error-code">502</div>
+
+<div class="title">Request failed</div>
+<div class="subtitle">
+    The connection could not be completed due to an upstream service issue.
+</div>
+
+<div class="flow">
+
+    <div class="node active">
+    <div class="dot"></div>
+    <div class="label">Browser</div>
+    <div class="value">Client</div>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="node active">
+    <div class="dot"></div>
+    <div class="label">Edge</div>
+    <div class="value">uplinkr.xyz</div>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="node failed">
+    <div class="dot"></div>
+    <div class="label">Upstream</div>
+    <div class="value">127.0.0.1</div>
+    </div>
+
+</div>
+
+<div class="status">
+    <span>Upstream unreachable</span>
+    <span>ERR_BAD_GATEWAY</span>
+</div>
+
+<div class="footer">
+    <span>Retry recommended</span>
+    <span>Status: degraded</span>
+</div>
+
+</div>
+</body>

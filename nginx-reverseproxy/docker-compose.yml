@@ -12,4 +12,5 @@ services:
       - ./uplinkr:/etc/nginx/sites-enabled/uplinkr:ro
       - ./uplinkr-wildcard:/etc/nginx/sites-enabled/uplinkr-wildcard:ro
       - ./uplinkr-ws-server:/etc/nginx/sites-enabled/uplinkr-ws-server:ro
+      - ./fallback-page:/var/www/html/uplinkr-fallback:ro
     restart: unless-stopped
